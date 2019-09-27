@@ -1,0 +1,181 @@
+File Format
+-----------
+
+First two bytes are not used, and they are not counted when using the
+offset
+
+All positions given for a byte index are by word (16 bit) so you
+usually need to multiply these by two in order to get the byte offset
+
+Footer offset:
+
+Read a U32, if it's NOT one then it is the footer offset
+
+Otherwise read a U96, this will be the footer offset
+
+This offset is in terms of words (16 bit), so the actual byte offset
+will be twice this value
+
+Footer:
+
+One chunk for the struct defs (this will probably be an "array" chunk)
+
+Each chunk in the array will be another array
+
+The first item contains a number for the number of args
+
+The second item is the name of the struct
+
+Rest:
+
+The rest of the file picks up back at the beginning of the file
+immediately after where you read the footer offset (depends if you
+read a U32 or U96)
+
+Chunk definition
+----------------
+
+First two bytes list type
+
+::
+
+/type/ F4 FF = 65524 = -12
+
+/name/ Struct
+
+/info/ Structs contain named lists of data
+
+U16 index into array of struct defs
+
+Chunk args * arg_len (arg_len is determined by struct def)
+
+::
+
+/type/ F6 FF = 65526 = -10
+
+/name/ FlowRefObject
+
+/info/ ref objects contain a single chunk which is their value
+
+Chunk
+
+::
+
+/type/ FA FF = 65530 = -6
+
+/name/ String
+
+/info/ contains a UTF16 string
+
+U16 len (number of characters, half the binary length)
+
+Character * len (len characters in UTF16)
+
+::
+
+/type/ FC FF = 65532 = -4
+
+/name/ Double
+
+/info/ IEEE 64 bit double
+
+Double
+
+::
+
+/type/ F5 FF = 65525 = -11
+
+/name/ Integer
+
+/info/ A 32 bit unsigned integer
+
+U32
+
+::
+
+/type/ F3 FF = 65523 = -13
+
+/name/ Long
+
+/info/ A 64 bit unsigned integer
+
+U64
+
+::
+
+/type/ FD FF = 65533 = -3
+
+/name/ false
+
+/info/ boolean false
+
+::
+
+/type/ FE FF = 65534 = -2
+
+/name/ true
+
+/info/ boolean true
+
+::
+
+/type/ F8 FF = 65528 = -8
+
+/name/ Array
+
+/info/ A list of chunks
+
+U16 len
+
+Chunk items * len
+
+::
+
+/type/ F7 FF = 65527 = -9
+
+/name/ nil
+
+/info/ An empty array
+
+::
+
+/type/ FB FF = 65531 = -5
+
+/name/ LongerString
+
+/info/ A UTF16 string but with a longer possible length than (FA FF =
+65530 = -6)
+
+U32 len (number of characters, half the binary length)
+
+Character * len
+
+::
+
+/type/ F9 FF = 65529 = -7
+
+/name/ LongerArray
+
+/info/ A list of chunks but with a longer possible length than (F8 FF
+= 65528 = -8)
+
+U32 len
+
+Chunk item * len
+
+::
+
+/type/ FF FF = 65535 = -1
+
+/name/ null
+
+/info/ A reference to nothing
+
+::
+
+/type/ anything else
+
+/name/ Short
+
+/info/ Any other word that is not a specific type is simply a U16
+value that is the type's value itself

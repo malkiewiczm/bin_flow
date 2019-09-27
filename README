@@ -1,0 +1,11 @@
+given a .binflow file from MGH, it will parse the file and return the 
+answers to the learnsmart questions.
+
+usage:
+
+compile program (make) and run the program with the .binflow file as an 
+argument, it will output two files, one which is the pseudo json of the 
+tree structure of file, and the other which is the answers in a nice 
+human-readable form.
+
+see the docu.txt for the file format of the binary blobs
